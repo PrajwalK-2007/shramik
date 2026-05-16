@@ -3,33 +3,124 @@ import {
   ArrowLeft,
   CheckSquare,
   ChevronRight,
-  Database,
+  Cloud,
   Download,
-  FolderOpen,
   Globe,
+  Key,
   Printer,
-  Server,
+  RefreshCw,
   Settings,
   Terminal,
   TriangleAlert,
   Upload,
 } from "lucide-react";
 
+// ─── Code Snippets ───────────────────────────────────────────────────────────
+
+const GIT_COMMANDS_EXISTING = `# Your code is already on GitHub at:
+https://github.com/PrajwalK-2007/shramik
+
+# To pull the latest version to your computer (optional):
+git clone https://github.com/PrajwalK-2007/shramik.git
+cd shramik`;
+
+const GIT_COMMANDS_NEW = `# Run these in your terminal from the project folder:
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+
+# Create a repo on github.com first, then:
+git remote add origin https://github.com/YOUR_USERNAME/shramik.git
+git push -u origin main`;
+
+const VERCEL_ENV_VARS = `VITE_CANISTER_ID_BACKEND = xxxxx-xxxxx-xxxxx-xxxxx-cai
+VITE_DFX_NETWORK = ic`;
+
+const VERCEL_JSON_CONTENT = `{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}`;
+
+const VERCEL_JSON_COMMIT = `# Create the file at: src/frontend/vercel.json
+# Then commit and push:
+git add .
+git commit -m "Add vercel.json for SPA routing"
+git push`;
+
+// ─── Step Metadata ────────────────────────────────────────────────────────────
+
 const STEPS = [
-  { icon: Database, label: "MongoDB Atlas", color: "bg-green-600" },
-  { icon: Server, label: "Node.js Backend", color: "bg-blue-600" },
-  { icon: Settings, label: "vercel.json", color: "bg-orange-600" },
-  { icon: FolderOpen, label: ".gitignore", color: "bg-slate-600" },
-  { icon: Globe, label: "Frontend Env", color: "bg-purple-600" },
-  { icon: Upload, label: "Push to GitHub", color: "bg-rose-600" },
-  { icon: Globe, label: "Deploy on Vercel", color: "bg-indigo-600" },
-  { icon: Settings, label: "Set VITE_API_URL", color: "bg-teal-600" },
+  { icon: Upload, label: "Code on GitHub", color: "bg-primary" },
+  { icon: Key, label: "Get Canister ID", color: "bg-secondary" },
+  { icon: Cloud, label: "Sign up Vercel", color: "bg-accent" },
+  { icon: Globe, label: "Import Repo", color: "bg-primary" },
+  { icon: Settings, label: "Env Variables", color: "bg-secondary" },
+  { icon: RefreshCw, label: "Deploy", color: "bg-accent" },
+  { icon: CheckSquare, label: "Test Live Site", color: "bg-primary" },
+  { icon: TriangleAlert, label: "Fix Errors", color: "bg-secondary" },
+  { icon: Terminal, label: "vercel.json", color: "bg-accent" },
 ];
+
+const CHECKLIST_ITEMS = [
+  "Home page loads without a blank screen",
+  "GPS map shows on home page and discover page",
+  "Worker registration form submits successfully (3 steps)",
+  "New worker appears in admin pending list",
+  "Admin login works (shramik@gmail.com / shramik!@#123)",
+  "Admin can approve a worker — worker moves to verified list",
+  "Approved worker appears in home page worker cards",
+  "Worker can log in after admin approval",
+  "Worker dashboard shows (profile, availability toggle, logout)",
+  "Language switcher changes text (EN / HI / MR)",
+  "Page refresh works — no 404 error",
+];
+
+const ERROR_TABLE: { error: string; cause: string; fix: string }[] = [
+  {
+    error: "Blank page on Vercel",
+    cause: "Wrong Root Directory",
+    fix: "Set Root Directory to src/frontend in Vercel import settings",
+  },
+  {
+    error: "Admin login fails",
+    cause: "Missing/wrong canister ID",
+    fix: "Check VITE_CANISTER_ID_BACKEND is correct and VITE_DFX_NETWORK = ic",
+  },
+  {
+    error: '"Cannot connect to backend"',
+    cause: "ICP canister paused",
+    fix: "Go to Caffeine platform → make sure your project is deployed and running",
+  },
+  {
+    error: "404 on page refresh",
+    cause: "Missing SPA rewrite rule",
+    fix: "Add vercel.json to src/frontend/ — see Step 9 in this guide",
+  },
+  {
+    error: "Build failed on Vercel",
+    cause: "Wrong install command",
+    fix: "Change Install Command to npm install instead of pnpm install in Vercel settings",
+  },
+  {
+    error: "CORS error in browser",
+    cause: "ICP canister not live",
+    fix: "Make sure your Caffeine project is deployed; ICP handles CORS automatically",
+  },
+  {
+    error: "Workers not showing",
+    cause: "Wrong canister ID or network",
+    fix: "Double-check VITE_CANISTER_ID_BACKEND and VITE_DFX_NETWORK = ic, then redeploy",
+  },
+];
+
+// ─── Reusable Sub-Components ──────────────────────────────────────────────────
 
 function StepBadge({ num, color }: { num: number; color: string }) {
   return (
     <span
-      className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold text-white ${color} shrink-0`}
+      className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold text-white ${color} shrink-0 shadow-sm`}
     >
       {num}
     </span>
@@ -97,380 +188,14 @@ function InfoBox({
     warning: "bg-amber-50 border-amber-200 text-amber-900",
     success: "bg-green-50 border-green-200 text-green-900",
   };
+  const icons = { info: "💡", warning: "⚠️", success: "✅" };
   return (
-    <div className={`rounded-lg border p-4 my-4 text-sm ${styles[type]}`}>
+    <div className={`rounded-xl border p-4 my-4 text-sm ${styles[type]}`}>
+      <span className="mr-2">{icons[type]}</span>
       {children}
     </div>
   );
 }
-
-const FOLDER_STRUCTURE = `shramik/
-├── backend/
-│   ├── server.js
-│   ├── package.json
-│   ├── .env
-│   └── models/
-│       ├── Worker.js
-│       └── Seeker.js
-├── frontend/
-│   ├── src/
-│   ├── index.html
-│   ├── vite.config.js
-│   ├── package.json
-│   └── .env
-├── vercel.json
-├── .gitignore
-└── README.md`;
-
-const BACKEND_PACKAGE_JSON = `{
-  "name": "shramik-backend",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^8.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2"
-  }
-}`;
-
-const SERVER_JS = `require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-
-// ── Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('DB Error:', err));
-
-const Worker = require('./models/Worker');
-const Seeker = require('./models/Seeker');
-
-// ── ADMIN ROUTES ──────────────────────────────────────────
-app.post('/api/admin/login', (req, res) => {
-  const { email, password } = req.body;
-  if (email === 'shramik@gmail.com' && password === 'shramik!@#123') {
-    const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    return res.json({ success: true, token });
-  }
-  res.status(401).json({ success: false, message: 'Invalid credentials' });
-});
-
-app.get('/api/admin/workers/pending', async (req, res) => {
-  const workers = await Worker.find({ verification_status: 'pending' });
-  res.json(workers);
-});
-
-app.get('/api/admin/workers/verified', async (req, res) => {
-  const workers = await Worker.find({ verification_status: 'verified' });
-  res.json(workers);
-});
-
-app.get('/api/admin/workers/removed', async (req, res) => {
-  const workers = await Worker.find({ verification_status: 'removed' });
-  res.json(workers);
-});
-
-app.put('/api/admin/workers/:id/approve', async (req, res) => {
-  const w = await Worker.findByIdAndUpdate(req.params.id,
-    { verification_status: 'verified', approved_at: new Date() }, { new: true });
-  res.json(w);
-});
-
-app.put('/api/admin/workers/:id/reject', async (req, res) => {
-  const w = await Worker.findByIdAndUpdate(req.params.id,
-    { verification_status: 'rejected', rejection_reason: req.body.reason }, { new: true });
-  res.json(w);
-});
-
-app.put('/api/admin/workers/:id/remove', async (req, res) => {
-  const w = await Worker.findByIdAndUpdate(req.params.id,
-    { verification_status: 'removed' }, { new: true });
-  res.json(w);
-});
-
-app.put('/api/admin/workers/:id/restore', async (req, res) => {
-  const w = await Worker.findByIdAndUpdate(req.params.id,
-    { verification_status: 'pending' }, { new: true });
-  res.json(w);
-});
-
-app.get('/api/admin/stats', async (req, res) => {
-  const [total, pending, verified, removed] = await Promise.all([
-    Worker.countDocuments(),
-    Worker.countDocuments({ verification_status: 'pending' }),
-    Worker.countDocuments({ verification_status: 'verified' }),
-    Worker.countDocuments({ verification_status: 'removed' }),
-  ]);
-  res.json({ total, pending, verified, removed });
-});
-
-// ── WORKER ROUTES ─────────────────────────────────────────
-app.post('/api/workers/register', async (req, res) => {
-  try {
-    const hashed = await bcrypt.hash(req.body.password, 10);
-    const worker = await Worker.create({ ...req.body, password: hashed });
-    res.json({ success: true, worker });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-});
-
-app.post('/api/workers/login', async (req, res) => {
-  const worker = await Worker.findOne({ email: req.body.email });
-  if (!worker || !(await bcrypt.compare(req.body.password, worker.password)))
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
-  if (worker.verification_status !== 'verified')
-    return res.status(403).json({ success: false, message: 'Account not yet approved by admin' });
-  const token = jwt.sign(
-    { id: worker._id, role: 'worker' },
-    process.env.JWT_SECRET,
-    { expiresIn: '7d' }
-  );
-  res.json({ success: true, token, worker });
-});
-
-app.get('/api/workers/recent', async (req, res) => {
-  const workers = await Worker.find({ verification_status: 'verified' })
-    .sort({ approved_at: -1 }).limit(12).select('-password');
-  res.json(workers);
-});
-
-app.get('/api/workers/nearby', async (req, res) => {
-  const { lat, lng, radius = 20, profession } = req.query;
-  const query = { verification_status: 'verified' };
-  if (profession && profession !== 'all') query.profession = profession;
-  const workers = await Worker.find(query).select('-password');
-  const R = 6371;
-  const filtered = workers.filter(w => {
-    if (!w.location_lat || !w.location_lng) return false;
-    const dLat = (w.location_lat - lat) * Math.PI / 180;
-    const dLng = (w.location_lng - lng) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 +
-      Math.cos(Number(lat)*Math.PI/180) *
-      Math.cos(w.location_lat*Math.PI/180) *
-      Math.sin(dLng/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) <= Number(radius);
-  });
-  res.json(filtered);
-});
-
-app.get('/api/workers/:id', async (req, res) => {
-  const worker = await Worker.findById(req.params.id).select('-password');
-  if (!worker) return res.status(404).json({ message: 'Worker not found' });
-  res.json(worker);
-});
-
-// ── SEEKER ROUTES ─────────────────────────────────────────
-app.post('/api/seekers/register', async (req, res) => {
-  try {
-    const hashed = await bcrypt.hash(req.body.password, 10);
-    const seeker = await Seeker.create({ ...req.body, password: hashed });
-    res.json({ success: true, seeker });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-});
-
-app.post('/api/seekers/login', async (req, res) => {
-  const seeker = await Seeker.findOne({ email: req.body.email });
-  if (!seeker || !(await bcrypt.compare(req.body.password, seeker.password)))
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
-  const token = jwt.sign(
-    { id: seeker._id, role: 'seeker' },
-    process.env.JWT_SECRET,
-    { expiresIn: '7d' }
-  );
-  res.json({ success: true, token, seeker });
-});
-
-// ── START SERVER ──────────────────────────────────────────
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log('Shramik server running on port', PORT));`;
-
-const WORKER_MODEL = `const mongoose = require('mongoose');
-
-const workerSchema = new mongoose.Schema({
-  name:                    { type: String, required: true },
-  email:                   { type: String, required: true, unique: true },
-  phone:                   { type: String, required: true },
-  password:                { type: String, required: true },
-  profession:              { type: String, required: true },
-  profession_custom:       String,
-  availability: {
-    startTime:             String,
-    endTime:               String,
-  },
-  location_lat:            Number,
-  location_lng:            Number,
-  location_address:        String,
-  hourly_rate:             Number,
-  skills:                  [String],
-  profile_photo:           String,
-  bio:                     String,
-  years_of_experience:     Number,
-  languages_spoken:        [String],
-  emergency_contact_name:  String,
-  emergency_contact_phone: String,
-  payment_preference: {
-    type: String,
-    enum: ['UPI', 'Bank Transfer', 'Cash'],
-    default: 'Cash',
-  },
-  verification_status: {
-    type: String,
-    enum: ['pending', 'verified', 'rejected', 'removed'],
-    default: 'pending',
-  },
-  is_available:     { type: Boolean, default: true },
-  rejection_reason: String,
-  admin_notes:      String,
-  approved_at:      Date,
-  created_at:       { type: Date, default: Date.now },
-});
-
-module.exports = mongoose.model('Worker', workerSchema);`;
-
-const SEEKER_MODEL = `const mongoose = require('mongoose');
-
-const seekerSchema = new mongoose.Schema({
-  name:       { type: String, required: true },
-  email:      { type: String, required: true, unique: true },
-  phone:      String,
-  password:   { type: String, required: true },
-  is_active:  { type: Boolean, default: true },
-  created_at: { type: Date, default: Date.now },
-});
-
-module.exports = mongoose.model('Seeker', seekerSchema);`;
-
-const BACKEND_ENV = `MONGODB_URI=mongodb+srv://youruser:yourpass@cluster0.xxxxx.mongodb.net/shramik
-JWT_SECRET=shramik_secret_key_2024
-PORT=3001`;
-
-const VERCEL_JSON = `{
-  "version": 2,
-  "builds": [
-    {
-      "src": "backend/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "backend/server.js" },
-    { "handle": "filesystem" },
-    { "src": "(.*)", "dest": "/index.html" }
-  ]
-}`;
-
-const GITIGNORE_CONTENT = `node_modules/
-backend/node_modules/
-frontend/node_modules/
-.env
-backend/.env
-frontend/.env
-frontend/dist/
-*.log
-.DS_Store`;
-
-const FRONTEND_API_CALL = `# frontend/.env
-VITE_API_URL=https://your-project.vercel.app
-
-// In your React components — replace actor calls with fetch:
-const res = await fetch(\`\${import.meta.env.VITE_API_URL}/api/workers/recent\`);
-const data = await res.json();
-
-// Admin login
-const res = await fetch(\`\${import.meta.env.VITE_API_URL}/api/admin/login\`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password }),
-});
-
-// Worker registration
-const res = await fetch(\`\${import.meta.env.VITE_API_URL}/api/workers/register\`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(formData),
-});`;
-
-const GIT_COMMANDS = `cd shramik
-git init
-git add .
-git commit -m "Initial Shramik app commit"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/shramik.git
-git push -u origin main`;
-
-const CHECKLIST_ITEMS = [
-  "Home page loads without blank screen",
-  "GPS map shows on home page and discover page",
-  "Worker registration form submits (3 steps)",
-  "New worker appears in admin pending list",
-  "Admin login works (shramik@gmail.com / shramik!@#123)",
-  "Admin can approve worker — worker moves to verified list",
-  "Approved worker appears in home page worker cards",
-  "Worker can log in after approval",
-  "Worker dashboard shows (profile, availability toggle, logout)",
-  "Language switcher changes text (EN / HI / MR)",
-  "Page refresh works — no 404 error",
-];
-
-const ERROR_TABLE: { error: string; cause: string; fix: string }[] = [
-  {
-    error: "Blank page on Vercel",
-    cause: "Wrong output directory",
-    fix: "Set Output Directory to frontend/dist in Vercel settings",
-  },
-  {
-    error: "404 on page refresh",
-    cause: "Missing SPA rewrite rule",
-    fix: 'Add {handle:filesystem} + {src:"(.*)",dest:"/index.html"} to vercel.json routes',
-  },
-  {
-    error: "Cannot connect to database",
-    cause: "Wrong MONGODB_URI",
-    fix: "Check Atlas connection string; ensure 0.0.0.0/0 is in Network Access",
-  },
-  {
-    error: "Admin login fails",
-    cause: "Missing env variables",
-    fix: "Ensure MONGODB_URI and JWT_SECRET are saved in Vercel env vars and redeployed",
-  },
-  {
-    error: "CORS error in browser",
-    cause: "CORS not configured",
-    fix: "Ensure cors() middleware appears before all routes in server.js",
-  },
-  {
-    error: "Workers not showing",
-    cause: "VITE_API_URL wrong",
-    fix: "After first deploy, set VITE_API_URL to your live Vercel URL and redeploy",
-  },
-  {
-    error: "Build failed on Vercel",
-    cause: "Missing dependencies",
-    fix: "Run npm install locally first to verify, then check package.json",
-  },
-];
 
 export function DeployGuidePage() {
   const navigate = useNavigate();
@@ -485,7 +210,7 @@ export function DeployGuidePage() {
         }
       `}</style>
 
-      {/* Top nav bar */}
+      {/* Sticky top nav */}
       <div className="sticky top-0 z-40 bg-card border-b border-border shadow-sm no-print">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <button
@@ -498,7 +223,7 @@ export function DeployGuidePage() {
             Back to Home
           </button>
           <div className="flex items-center gap-2">
-            <Terminal className="w-5 h-5 text-primary" />
+            <Globe className="w-5 h-5 text-primary" />
             <span className="font-display font-semibold text-foreground">
               Deployment Guide
             </span>
@@ -506,7 +231,7 @@ export function DeployGuidePage() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-md hover:opacity-90 transition-smooth"
+            className="inline-flex items-center gap-2 text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-md hover:opacity-90 transition-colors"
             data-ocid="deploy_guide.print_button"
           >
             <Printer className="w-4 h-4" />
@@ -516,23 +241,28 @@ export function DeployGuidePage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-10">
-        {/* Page hero */}
-        <div className="text-center mb-12">
+        {/* Hero */}
+        <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-4">
             <Globe className="w-4 h-4" />
-            Option B — Full Vercel Deployment
+            Option A — Frontend on Vercel + ICP Backend
           </div>
           <h1 className="text-4xl font-display font-bold text-foreground mb-3">
-            Shramik — Full Deployment Guide
+            Deploy Shramik on Vercel
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Deploy to GitHub + Vercel with Node.js backend, MongoDB Atlas
-            database, and React frontend — step by step, zero errors.
+            Keep your ICP backend live on Caffeine. Deploy the React frontend to
+            Vercel for a free public URL — no Node.js or database setup
+            required.
           </p>
+          <div className="inline-flex items-center gap-2 mt-4 px-3 py-1.5 bg-muted rounded-lg text-xs text-muted-foreground">
+            <Terminal className="w-3.5 h-3.5" />
+            Last updated: Option A — Frontend on Vercel + ICP Backend
+          </div>
         </div>
 
         {/* Step overview grid */}
-        <div className="grid grid-cols-4 gap-3 mb-12 no-print">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-12 no-print">
           {STEPS.map((s, i) => (
             <div
               key={s.label}
@@ -557,14 +287,15 @@ export function DeployGuidePage() {
             <CheckSquare className="w-5 h-5 text-primary" />
             What You Need Before Starting
           </h2>
-          <ul className="grid grid-cols-2 gap-2 text-sm text-foreground">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-foreground">
             {[
               ["GitHub account", "github.com (free)"],
-              ["MongoDB Atlas account", "mongodb.com/atlas (free)"],
               ["Vercel account", "vercel.com (free)"],
-              ["Node.js 18+ installed", "nodejs.org"],
+              [
+                "Caffeine project live",
+                "Your Shramik ICP canister must be deployed",
+              ],
               ["Git installed", "git-scm.com"],
-              ["VS Code or any editor", "code.visualstudio.com"],
             ].map(([name, url]) => (
               <li key={name} className="flex items-center gap-2">
                 <ChevronRight className="w-4 h-4 text-primary shrink-0" />
@@ -575,100 +306,80 @@ export function DeployGuidePage() {
               </li>
             ))}
           </ul>
-        </section>
-
-        {/* Folder structure */}
-        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
-          <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
-            <FolderOpen className="w-5 h-5 text-primary" />
-            Project Folder Structure
-          </h2>
-          <p className="text-sm text-muted-foreground mb-3">
-            Create this exact structure on your computer:
-          </p>
-          <CodeBlock code={FOLDER_STRUCTURE} language="file tree" />
+          <InfoBox type="success">
+            <strong>Good news:</strong> Because your backend runs on the
+            Internet Computer (ICP), you do NOT need MongoDB, a Node.js server,
+            or any separate hosting for the backend. Vercel hosts only your
+            React UI.
+          </InfoBox>
         </section>
 
         {/* Step 1 */}
         <section className="mb-10 bg-card border border-border rounded-2xl p-6">
           <SectionHeader
             num={1}
-            icon={Database}
-            title="Set Up MongoDB Atlas (Free Database)"
-            subtitle="Your app needs a database to store workers, seekers, and registration requests."
-            color="bg-green-600"
+            icon={Upload}
+            title="Export Your Code to GitHub"
+            subtitle="Your code is already exported. If you need to push fresh changes, follow the steps below."
+            color="bg-primary"
           />
-          <ol className="space-y-3 text-sm text-foreground list-none">
+          <h3 className="font-semibold text-foreground mb-2 mt-2">
+            ✅ Already on GitHub?
+          </h3>
+          <CodeBlock code={GIT_COMMANDS_EXISTING} language="bash" />
+          <h3 className="font-semibold text-foreground mb-2 mt-4">
+            🆕 Starting from scratch?
+          </h3>
+          <ol className="space-y-2 text-sm text-foreground mb-3">
             {[
-              'Go to mongodb.com/atlas → click "Try Free" → sign up with Google or email',
-              'Click "Create" → choose the free M0 tier → select any region → click "Create Cluster"',
-              'Click "Connect" on your cluster → choose "Connect your application"',
-              "Copy the connection string: mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/shramik",
-              'Under "Network Access" (left sidebar) → click "Add IP Address" → enter 0.0.0.0/0 → confirm',
-              'Under "Database Access" → click "Add new database user" → create username and password → save both',
-              "Replace <username> and <password> in your connection string with your credentials",
-            ].map((step, i) => (
-              <li key={step} className="flex gap-3">
-                <span className="flex-none w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center mt-0.5">
+              "Go to github.com → sign in or create a free account",
+              "Click the '+' button → New repository → name it shramik",
+              'Leave "Add README" and ".gitignore" UNCHECKED → click Create repository',
+              "Copy the HTTPS URL shown on the next page",
+              "Open your terminal in the project folder and run:",
+            ].map((s, i) => (
+              <li key={s.slice(0, 30)} className="flex gap-3">
+                <span className="flex-none w-5 h-5 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
-                <span>{step}</span>
+                <span>{s}</span>
               </li>
             ))}
           </ol>
-          <InfoBox type="warning">
-            <strong>Important:</strong> The 0.0.0.0/0 Network Access rule is
-            required so Vercel servers can reach your database. Without it you
-            will get "Cannot connect to database" errors.
-          </InfoBox>
+          <CodeBlock code={GIT_COMMANDS_NEW} language="bash" />
         </section>
 
         {/* Step 2 */}
-        <section className="mb-10 bg-card border border-border rounded-2xl p-6 page-break">
+        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
           <SectionHeader
             num={2}
-            icon={Server}
-            title="Create the Backend (Node.js + Express)"
-            subtitle="Inside your shramik/backend/ folder, create these files:"
-            color="bg-blue-600"
+            icon={Key}
+            title="Get Your ICP Canister ID"
+            subtitle="The frontend needs this ID to know where to find the backend on the Internet Computer."
+            color="bg-secondary"
           />
-
-          <h3 className="font-semibold text-foreground mb-1 mt-4">
-            backend/package.json
-          </h3>
-          <CodeBlock code={BACKEND_PACKAGE_JSON} language="json" />
-
-          <h3 className="font-semibold text-foreground mb-1 mt-6">
-            backend/server.js{" "}
-            <span className="text-xs font-normal text-muted-foreground">
-              (complete file — all API routes)
-            </span>
-          </h3>
-          <CodeBlock code={SERVER_JS} language="javascript" />
-
-          <h3 className="font-semibold text-foreground mb-1 mt-6">
-            backend/models/Worker.js
-          </h3>
-          <CodeBlock code={WORKER_MODEL} language="javascript" />
-
-          <h3 className="font-semibold text-foreground mb-1 mt-6">
-            backend/models/Seeker.js
-          </h3>
-          <CodeBlock code={SEEKER_MODEL} language="javascript" />
-
-          <h3 className="font-semibold text-foreground mb-1 mt-6">
-            backend/.env{" "}
-            <span className="text-xs font-normal text-muted-foreground">
-              (do NOT commit this file)
-            </span>
-          </h3>
-          <CodeBlock code={BACKEND_ENV} language=".env" />
-
-          <InfoBox type="info">
-            <strong>
-              Install backend dependencies — run in your terminal:
-            </strong>
-            <CodeBlock code="cd backend&#10;npm install" language="bash" />
+          <ol className="space-y-3 text-sm text-foreground">
+            {[
+              "Go to your Caffeine platform project dashboard",
+              'Find the "Settings" or "Deployment" section of your Shramik project',
+              'Look for "Backend Canister ID" — it looks like this:',
+              "Copy that value — you will paste it into Vercel in Step 5",
+            ].map((s, i) => (
+              <li key={s.slice(0, 30)} className="flex gap-3">
+                <span className="flex-none w-6 h-6 rounded-full bg-secondary/10 text-secondary text-xs font-bold flex items-center justify-center mt-0.5">
+                  {i + 1}
+                </span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="my-4 px-4 py-3 bg-muted rounded-xl border border-border font-mono text-sm text-muted-foreground">
+            xxxxx-xxxxx-xxxxx-xxxxx-cai
+          </div>
+          <InfoBox type="warning">
+            <strong>This is NOT a code change.</strong> You are just copying a
+            value from the Caffeine dashboard and pasting it into Vercel. No
+            files need to be edited.
           </InfoBox>
         </section>
 
@@ -676,144 +387,88 @@ export function DeployGuidePage() {
         <section className="mb-10 bg-card border border-border rounded-2xl p-6">
           <SectionHeader
             num={3}
-            icon={Settings}
-            title="Create vercel.json in the ROOT Folder"
-            subtitle="This file tells Vercel how to build and route both the frontend and backend."
-            color="bg-orange-600"
+            icon={Cloud}
+            title="Sign Up on Vercel"
+            subtitle="Vercel is free and takes 2 minutes to set up."
+            color="bg-accent"
           />
-          <CodeBlock code={VERCEL_JSON} language="json" />
+          <ol className="space-y-2 text-sm text-foreground">
+            {[
+              "Go to vercel.com",
+              'Click "Sign Up" → choose "Continue with GitHub"',
+              "Authorize Vercel to access your GitHub repositories",
+              'You will be taken to the Vercel dashboard — click "Add New Project"',
+            ].map((s, i) => (
+              <li key={s.slice(0, 30)} className="flex gap-3">
+                <span className="flex-none w-6 h-6 rounded-full bg-accent/10 text-accent text-xs font-bold flex items-center justify-center mt-0.5">
+                  {i + 1}
+                </span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
           <InfoBox type="info">
-            The{" "}
-            <code className="bg-muted px-1 rounded text-xs font-mono">
-              handle: filesystem
-            </code>{" "}
-            rule before the SPA catch-all prevents 404 errors on page refresh.
+            If you already have a Vercel account, just log in and go to your
+            dashboard.
           </InfoBox>
         </section>
 
         {/* Step 4 */}
-        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
-          <SectionHeader
-            num={4}
-            icon={FolderOpen}
-            title="Create .gitignore in the Root Folder"
-            subtitle="Prevents secrets and build artifacts from being pushed to GitHub."
-            color="bg-slate-600"
-          />
-          <CodeBlock code={GITIGNORE_CONTENT} language=".gitignore" />
-        </section>
-
-        {/* Step 5 */}
-        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
-          <SectionHeader
-            num={5}
-            icon={Globe}
-            title="Update Frontend to Use Vercel Backend"
-            subtitle="Replace all ICP/Motoko actor calls with fetch() calls to your Vercel API."
-            color="bg-purple-600"
-          />
-          <CodeBlock code={FRONTEND_API_CALL} language="javascript" />
-          <InfoBox type="warning">
-            <strong>Important:</strong> Every place in your frontend that calls{" "}
-            <code className="bg-amber-100 px-1 rounded text-xs font-mono">
-              actor.method()
-            </code>{" "}
-            must be replaced with a{" "}
-            <code className="bg-amber-100 px-1 rounded text-xs font-mono">
-              fetch()
-            </code>{" "}
-            call to the corresponding{" "}
-            <code className="bg-amber-100 px-1 rounded text-xs font-mono">
-              /api/...
-            </code>{" "}
-            endpoint. Check your Home, Register, Login, and AdminDashboard
-            pages.
-          </InfoBox>
-        </section>
-
-        {/* Step 6 */}
-        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
-          <SectionHeader
-            num={6}
-            icon={Upload}
-            title="Push to GitHub"
-            subtitle="Run these commands in your terminal from the shramik/ root folder:"
-            color="bg-rose-600"
-          />
-          <CodeBlock code={GIT_COMMANDS} language="bash" />
-          <InfoBox type="info">
-            <strong>Before running these commands:</strong> Go to{" "}
-            <strong>github.com</strong> → click <strong>New Repository</strong>{" "}
-            → name it <strong>shramik</strong> → leave "Add README" and
-            ".gitignore" <strong>unchecked</strong> → click Create Repository.
-            Then copy the HTTPS URL and use it in the{" "}
-            <code className="bg-blue-100 px-1 rounded text-xs font-mono">
-              git remote add
-            </code>{" "}
-            command above.
-          </InfoBox>
-        </section>
-
-        {/* Step 7 */}
         <section className="mb-10 bg-card border border-border rounded-2xl p-6 page-break">
           <SectionHeader
-            num={7}
+            num={4}
             icon={Globe}
-            title="Deploy on Vercel"
-            subtitle="Connect your GitHub repo to Vercel and configure the build settings."
-            color="bg-indigo-600"
+            title="Import the GitHub Repository"
+            subtitle="Connect your shramik repo to Vercel and configure the build settings."
+            color="bg-primary"
           />
-          <ol className="space-y-5 text-sm">
+          <ol className="space-y-4 text-sm">
             {(
               [
                 {
-                  title: "Sign in to Vercel",
+                  title: "Find your repo",
                   detail:
-                    'Go to vercel.com → click "Sign Up" (or Log In) → choose "Continue with GitHub"',
+                    'On Vercel → Add New Project → find shramik in the list → click "Import"',
                 },
                 {
-                  title: "Add New Project",
-                  detail:
-                    'Click "Add New Project" → find and select your shramik repo → click "Import"',
+                  title: "Framework Preset",
+                  detail: 'Vercel will auto-detect "Vite". Leave it as Vite.',
                 },
                 {
-                  title: "Configure Build Settings",
-                  detail: "Set these values manually:",
+                  title: "Set Root Directory — CRITICAL",
+                  detail:
+                    'Click "Edit" next to Root Directory and type: src/frontend',
+                  warning: true,
+                },
+                {
+                  title: "Build & Output Settings",
+                  detail: "Use these settings:",
                   table: [
-                    ["Framework Preset", "Other"],
-                    [
-                      "Root Directory",
-                      "(leave blank — vercel.json is at root)",
-                    ],
-                    [
-                      "Build Command",
-                      "cd frontend && npm install && npm run build",
-                    ],
-                    ["Output Directory", "frontend/dist"],
+                    ["Framework Preset", "Vite"],
+                    ["Root Directory", "src/frontend"],
+                    ["Build Command", "pnpm build (or npm run build)"],
+                    ["Output Directory", "dist"],
+                    ["Install Command", "pnpm install (or npm install)"],
                   ],
                 },
-                {
-                  title: "Add Environment Variables",
-                  detail: 'Click "Add" for each:',
-                  table: [
-                    ["MONGODB_URI", "your MongoDB Atlas connection string"],
-                    ["JWT_SECRET", "shramik_secret_key_2024"],
-                    ["VITE_API_URL", "(leave blank — set after first deploy)"],
-                  ],
-                },
-                {
-                  title: "Click Deploy",
-                  detail:
-                    'Click the blue "Deploy" button. Wait ~2 minutes. You will get a URL like https://shramik.vercel.app',
-                },
-              ] as { title: string; detail: string; table?: string[][] }[]
+              ] as {
+                title: string;
+                detail: string;
+                warning?: boolean;
+                table?: string[][];
+              }[]
             ).map((step, i) => (
               <li key={step.title} className="flex gap-3">
-                <span className="flex-none w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center mt-0.5">
+                <span className="flex-none w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
                 <div className="flex-1">
-                  <p className="font-semibold text-foreground">{step.title}</p>
+                  <p
+                    className={`font-semibold ${step.warning ? "text-amber-700" : "text-foreground"}`}
+                  >
+                    {step.warning ? "⚠️ " : ""}
+                    {step.title}
+                  </p>
                   <p className="text-muted-foreground mt-0.5">{step.detail}</p>
                   {step.table && (
                     <table className="mt-2 w-full text-xs border border-border rounded-lg overflow-hidden">
@@ -823,7 +478,7 @@ export function DeployGuidePage() {
                             key={k}
                             className="border-b border-border last:border-0"
                           >
-                            <td className="px-3 py-2 font-mono bg-muted font-medium w-1/3">
+                            <td className="px-3 py-2 font-mono bg-muted font-medium w-2/5">
                               {k}
                             </td>
                             <td className="px-3 py-2 text-muted-foreground">
@@ -838,41 +493,115 @@ export function DeployGuidePage() {
               </li>
             ))}
           </ol>
+          <InfoBox type="warning">
+            <strong>Root Directory is the most important setting.</strong> If
+            you leave it blank, Vercel will not find the frontend and the build
+            will fail or show a blank page. It must be set to{" "}
+            <code className="bg-amber-100 px-1 rounded font-mono">
+              src/frontend
+            </code>
+            .
+          </InfoBox>
         </section>
 
-        {/* Step 8 */}
+        {/* Step 5 */}
         <section className="mb-10 bg-card border border-border rounded-2xl p-6">
           <SectionHeader
-            num={8}
+            num={5}
             icon={Settings}
-            title="After First Deploy — Set VITE_API_URL"
-            subtitle="This step links your frontend to your live backend URL."
-            color="bg-teal-600"
+            title="Add Environment Variables on Vercel"
+            subtitle="Before clicking Deploy, scroll down to the Environment Variables section and add these two values."
+            color="bg-secondary"
+          />
+          <p className="text-sm text-foreground mb-2">
+            Click <strong>Add</strong> for each variable:
+          </p>
+          <CodeBlock code={VERCEL_ENV_VARS} language="env" />
+          <table className="w-full text-sm border border-border rounded-xl overflow-hidden mb-4">
+            <thead>
+              <tr className="bg-muted">
+                <th className="text-left px-4 py-3 font-semibold text-foreground">
+                  Variable
+                </th>
+                <th className="text-left px-4 py-3 font-semibold text-foreground">
+                  What it does
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-t border-border">
+                <td className="px-4 py-3 font-mono text-xs text-primary font-medium">
+                  VITE_CANISTER_ID_BACKEND
+                </td>
+                <td className="px-4 py-3 text-muted-foreground text-sm">
+                  Tells the React frontend which ICP canister to connect to.
+                  Paste your canister ID from Step 2 here.
+                </td>
+              </tr>
+              <tr className="border-t border-border bg-muted/30">
+                <td className="px-4 py-3 font-mono text-xs text-primary font-medium">
+                  VITE_DFX_NETWORK
+                </td>
+                <td className="px-4 py-3 text-muted-foreground text-sm">
+                  Tells the frontend to connect to the live Internet Computer
+                  network. Always set this to{" "}
+                  <code className="bg-muted px-1 rounded font-mono text-xs">
+                    ic
+                  </code>
+                  .
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <InfoBox type="warning">
+            <strong>Do not skip this step.</strong> Without these variables, the
+            frontend cannot find the backend. Admin login, worker registration,
+            and the GPS map will all fail.
+          </InfoBox>
+        </section>
+
+        {/* Step 6 */}
+        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
+          <SectionHeader
+            num={6}
+            icon={RefreshCw}
+            title="Deploy!"
+            subtitle="Click the Deploy button and wait for Vercel to build your site."
+            color="bg-accent"
           />
           <ol className="space-y-2 text-sm text-foreground">
             {[
-              "Copy your live URL from the Vercel dashboard (e.g. https://shramik.vercel.app)",
-              "Go to Vercel → your project → Settings → Environment Variables",
-              "Click Add → Name: VITE_API_URL → Value: https://shramik.vercel.app → Save",
-              "Go to Deployments tab → find your latest deploy → click the ... menu → Redeploy",
-              "Wait ~1 minute — your frontend now has the correct API URL baked in",
-            ].map((step, i) => (
-              <li key={step} className="flex gap-3">
-                <span className="flex-none w-6 h-6 rounded-full bg-teal-100 text-teal-700 text-xs font-bold flex items-center justify-center">
+              'Click the blue "Deploy" button at the bottom of the page',
+              "Vercel will install dependencies, build the React app, and publish it",
+              "This takes 1–3 minutes",
+              'When it finishes, you will see a green "Congratulations" screen',
+              "Vercel gives you a live URL, for example: https://shramik.vercel.app",
+              "Click the URL to open your live site",
+            ].map((s, i) => (
+              <li key={s.slice(0, 30)} className="flex gap-3">
+                <span className="flex-none w-6 h-6 rounded-full bg-accent/10 text-accent text-xs font-bold flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
-                <span>{step}</span>
+                <span>{s}</span>
               </li>
             ))}
           </ol>
+          <InfoBox type="success">
+            Every time you push new code to GitHub, Vercel will automatically
+            rebuild and redeploy your site. No manual steps needed after the
+            first setup.
+          </InfoBox>
         </section>
 
-        {/* Checklist */}
+        {/* Step 7 */}
         <section className="mb-10 bg-card border border-border rounded-2xl p-6">
-          <h2 className="text-xl font-display font-bold text-foreground mb-5 flex items-center gap-2">
-            <CheckSquare className="w-5 h-5 text-primary" />
-            Post-Deployment Checklist
-          </h2>
+          <SectionHeader
+            num={7}
+            icon={CheckSquare}
+            title="Test Your Live Site"
+            subtitle="Open the Vercel URL and run through this checklist to confirm everything works."
+            color="bg-primary"
+          />
           <ul className="space-y-2">
             {CHECKLIST_ITEMS.map((item) => (
               <li
@@ -884,16 +613,24 @@ export function DeployGuidePage() {
               </li>
             ))}
           </ul>
+          <InfoBox type="info">
+            Test on both desktop and mobile. Use browser DevTools → Console tab
+            to spot any errors. Most problems are caused by a missing or
+            incorrect environment variable — check Step 5 first.
+          </InfoBox>
         </section>
 
-        {/* Errors table */}
+        {/* Step 8 */}
         <section className="mb-10 bg-card border border-border rounded-2xl p-6">
-          <h2 className="text-xl font-display font-bold text-foreground mb-5 flex items-center gap-2">
-            <TriangleAlert className="w-5 h-5 text-amber-500" />
-            Common Errors &amp; Fixes
-          </h2>
+          <SectionHeader
+            num={8}
+            icon={TriangleAlert}
+            title="Common Errors & Fixes"
+            subtitle="If something is not working, find your error in this table."
+            color="bg-secondary"
+          />
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+            <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
               <thead>
                 <tr className="bg-muted">
                   <th className="text-left px-4 py-3 font-semibold text-foreground">
@@ -911,7 +648,9 @@ export function DeployGuidePage() {
                 {ERROR_TABLE.map((row, i) => (
                   <tr
                     key={row.error}
-                    className={`border-t border-border ${i % 2 === 0 ? "bg-background" : "bg-muted/30"}`}
+                    className={`border-t border-border ${
+                      i % 2 === 0 ? "bg-background" : "bg-muted/30"
+                    }`}
                   >
                     <td className="px-4 py-3 font-mono text-xs text-destructive font-medium">
                       {row.error}
@@ -927,13 +666,77 @@ export function DeployGuidePage() {
           </div>
         </section>
 
+        {/* Step 9 */}
+        <section className="mb-10 bg-card border border-border rounded-2xl p-6 page-break">
+          <SectionHeader
+            num={9}
+            icon={Terminal}
+            title="Add vercel.json (Fixes 404 on Page Refresh)"
+            subtitle="Without this file, refreshing any page on your Vercel site will show a 404 error."
+            color="bg-accent"
+          />
+          <p className="text-sm text-foreground mb-1">
+            Create a new file at{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded font-mono text-xs">
+              src/frontend/vercel.json
+            </code>{" "}
+            with this content:
+          </p>
+          <CodeBlock code={VERCEL_JSON_CONTENT} language="json" />
+          <p className="text-sm text-foreground mb-1">
+            Then commit and push it to GitHub:
+          </p>
+          <CodeBlock code={VERCEL_JSON_COMMIT} language="bash" />
+          <InfoBox type="info">
+            Vercel will automatically redeploy when you push. The 404 issue will
+            be fixed after the next deployment.
+          </InfoBox>
+        </section>
+
+        {/* Bonus: Custom domain */}
+        <section className="mb-10 bg-card border border-border rounded-2xl p-6">
+          <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
+            <Globe className="w-5 h-5 text-primary" />
+            Bonus — Add a Custom Domain
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Replace the default{" "}
+            <code className="bg-muted px-1 rounded font-mono text-xs">
+              shramik.vercel.app
+            </code>{" "}
+            URL with your own domain (e.g. shramik.in).
+          </p>
+          <ol className="space-y-2 text-sm text-foreground">
+            {[
+              "Go to Vercel Dashboard → click your shramik project → Settings → Domains",
+              "Type your domain (e.g. shramik.in) → click Add",
+              "Vercel shows you DNS records (an A record and a CNAME)",
+              "Log in to your domain registrar (GoDaddy, Namecheap, etc.)",
+              "Go to DNS settings → add the A record and CNAME that Vercel gave you",
+              "Wait up to 24 hours — Vercel will activate your domain automatically",
+            ].map((s, i) => (
+              <li key={s.slice(0, 30)} className="flex gap-3">
+                <span className="flex-none w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
+                  {i + 1}
+                </span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
+          <InfoBox type="info">
+            Connecting a custom domain on Vercel is free. You only need to buy
+            the domain from a registrar like GoDaddy or Namecheap (usually
+            ₹500–₹1500/year for .in domains).
+          </InfoBox>
+        </section>
+
         {/* Admin credentials */}
         <section className="mb-10 bg-primary/5 border-2 border-primary/20 rounded-2xl p-6">
           <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
-            <Settings className="w-5 h-5 text-primary" />
+            <Key className="w-5 h-5 text-primary" />
             Admin Login Credentials
           </h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { label: "Email", value: "shramik@gmail.com" },
               { label: "Password", value: "shramik!@#123" },
@@ -953,12 +756,9 @@ export function DeployGuidePage() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            These credentials are hardcoded in server.js. Change them before
-            going public by editing the{" "}
-            <code className="bg-muted px-1 rounded font-mono">
-              /api/admin/login
-            </code>{" "}
-            route.
+            These credentials are stored in your ICP backend canister. They can
+            be changed by updating the admin authentication logic in your Motoko
+            canister.
           </p>
         </section>
 
@@ -967,7 +767,7 @@ export function DeployGuidePage() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold text-base hover:opacity-90 transition-smooth shadow-elevated"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold text-base hover:opacity-90 transition-colors shadow-sm"
             data-ocid="deploy_guide.download_button"
           >
             <Download className="w-5 h-5" />
@@ -983,7 +783,7 @@ export function DeployGuidePage() {
       <button
         type="button"
         onClick={() => window.print()}
-        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-3 rounded-full font-semibold shadow-elevated hover:opacity-90 transition-smooth no-print"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-3 rounded-full font-semibold shadow-lg hover:opacity-90 transition-colors no-print"
         data-ocid="deploy_guide.floating_print_button"
       >
         <Printer className="w-4 h-4" />
