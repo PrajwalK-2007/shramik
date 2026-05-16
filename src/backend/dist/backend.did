@@ -1,0 +1,278 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type WorkerUpdate = 
+ record {
+   availability: WorkerAvailability;
+   bio: opt text;
+   email: text;
+   emergency_contact_name: opt text;
+   emergency_contact_phone: opt text;
+   hourly_rate: nat;
+   languages_spoken: opt vec text;
+   location_address: text;
+   location_lat: float64;
+   location_lng: float64;
+   name: text;
+   payment_preference: opt text;
+   phone: text;
+   profession: Profession;
+   profession_custom: opt text;
+   profile_photo: opt ExternalBlob;
+   skills: vec text;
+   years_of_experience: opt nat;
+ };
+type WorkerRegistration = 
+ record {
+   availability: WorkerAvailability;
+   bio: opt text;
+   email: text;
+   emergency_contact_name: opt text;
+   emergency_contact_phone: opt text;
+   hourly_rate: nat;
+   languages_spoken: opt vec text;
+   location_address: text;
+   location_lat: float64;
+   location_lng: float64;
+   name: text;
+   password: text;
+   payment_preference: opt text;
+   phone: text;
+   profession: Profession;
+   profession_custom: opt text;
+   profile_photo: opt ExternalBlob;
+   skills: vec text;
+   years_of_experience: opt nat;
+ };
+type WorkerPublic = 
+ record {
+   approved_at: opt Timestamp;
+   availability: WorkerAvailability;
+   distance_km: opt float64;
+   hourly_rate: nat;
+   id: WorkerId;
+   is_available: bool;
+   location_address: text;
+   location_lat: float64;
+   location_lng: float64;
+   name: text;
+   phone: text;
+   profession: Profession;
+   profession_custom: opt text;
+   profile_photo: opt ExternalBlob;
+   skills: vec text;
+   verification_status: VerificationStatus;
+ };
+type WorkerProfile = 
+ record {
+   admin_notes: opt text;
+   approved_at: opt Timestamp;
+   availability: WorkerAvailability;
+   bio: opt text;
+   created_at: Timestamp;
+   email: text;
+   emergency_contact_name: opt text;
+   emergency_contact_phone: opt text;
+   hourly_rate: nat;
+   id: WorkerId;
+   is_available: bool;
+   languages_spoken: opt vec text;
+   location_address: text;
+   location_lat: float64;
+   location_lng: float64;
+   name: text;
+   password: text;
+   payment_preference: opt text;
+   phone: text;
+   profession: Profession;
+   profession_custom: opt text;
+   profile_photo: opt ExternalBlob;
+   rejection_reason: opt text;
+   skills: vec text;
+   verification_status: VerificationStatus;
+   years_of_experience: opt nat;
+ };
+type WorkerId = principal;
+type WorkerAvailability = 
+ record {
+   endTime: text;
+   startTime: text;
+ };
+type VerificationStatus = 
+ variant {
+   Pending;
+   Rejected;
+   Removed;
+   Verified;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserApprovalInfo = 
+ record {
+   "principal": principal;
+   status: ApprovalStatus;
+ };
+type Timestamp = int;
+type SeekerRegistration = 
+ record {
+   email: text;
+   name: text;
+   password: text;
+   phone: text;
+ };
+type SeekerProfile = 
+ record {
+   created_at: Timestamp;
+   email: text;
+   id: SeekerId;
+   is_active: bool;
+   name: text;
+   password: text;
+   phone: text;
+ };
+type SeekerId = principal;
+type ProfessionCount = 
+ record {
+   count: nat;
+   profession: Profession;
+ };
+type Profession = 
+ variant {
+   ACTechnician;
+   Barber;
+   Caretaker;
+   Carpenter;
+   Cleaner;
+   Cook;
+   DeliveryWorker;
+   DemolitionWorker;
+   Driver;
+   Electrician;
+   EventHelper;
+   Gardner;
+   GlassFitter;
+   HeavyEquipmentOperator;
+   Helper;
+   Loader;
+   Mason;
+   Mechanic;
+   Mover;
+   Other;
+   Painter;
+   Peon;
+   PestControl;
+   Plumber;
+   RoadWorker;
+   RoofWorker;
+   Scaffolding;
+   SecurityGuard;
+   SteelFixer;
+   Sweeper;
+   Tailor;
+   TileLayer;
+   Washer;
+   Watchman;
+   Welder;
+ };
+type PlatformStats = 
+ record {
+   avg_hourly_rate: nat;
+   pending_workers: nat;
+   removed_workers: nat;
+   top_professions: vec ProfessionCount;
+   total_seekers: nat;
+   total_workers: nat;
+   verified_workers: nat;
+ };
+type ExternalBlob = blob;
+type ApprovalStatus = 
+ variant {
+   approved;
+   pending;
+   rejected;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  adminLogin: (email: text, password: text) ->
+   (variant {
+      err: text;
+      ok: record {
+            email: text;
+            name: text;
+          };
+    });
+  approveWorker: (workerId: principal) -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  getCallerUserRole: () -> (UserRole) query;
+  getMyWorkerProfile: () -> (opt WorkerProfile) query;
+  getNearbyWorkers: (lat: float64, lng: float64, radius_km: float64,
+   profession: opt Profession, availabilityFilter:
+   opt record {
+         endTime: text;
+         startTime: text;
+       }) -> (vec WorkerPublic) query;
+  getPendingWorkers: () -> (vec WorkerProfile) query;
+  getRecentVerifiedWorkers: (limit: nat) -> (vec WorkerPublic) query;
+  getRemovedWorkers: () -> (vec WorkerProfile) query;
+  getSeekerProfile: () -> (opt SeekerProfile) query;
+  getStats: () -> (PlatformStats) query;
+  getVerifiedWorkers: () -> (vec WorkerProfile) query;
+  getWorkerById: (id: principal) -> (opt WorkerPublic) query;
+  isCallerAdmin: () -> (bool) query;
+  isCallerApproved: () -> (bool) query;
+  listApprovals: () -> (vec UserApprovalInfo) query;
+  registerSeeker: (reg: SeekerRegistration) -> (SeekerProfile);
+  registerWorker: (reg: WorkerRegistration) -> (WorkerProfile);
+  rejectWorker: (workerId: principal, reason: text) -> ();
+  removeWorker: (workerId: principal, reason: text) -> ();
+  requestApproval: () -> ();
+  restoreWorker: (workerId: principal) -> ();
+  seekerLogin: (email: text, password: text) ->
+   (variant {
+      err: text;
+      ok: record {
+            email: text;
+            id: text;
+            name: text;
+          };
+    }) query;
+  setApproval: (user: principal, status: ApprovalStatus) -> ();
+  toggleAvailability: () -> (bool);
+  updateAdminNotes: (workerId: principal, notes: text) -> ();
+  updateWorkerProfile: (upd: WorkerUpdate) -> (WorkerProfile);
+  workerLogin: (email: text, password: text) ->
+   (variant {
+      err: text;
+      ok:
+       record {
+         email: text;
+         id: text;
+         name: text;
+         profession: text;
+         verification_status: text;
+       };
+    }) query;
+}

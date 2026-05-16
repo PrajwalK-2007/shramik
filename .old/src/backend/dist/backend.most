@@ -1,0 +1,127 @@
+// Version: 1.0.0
+type ApprovalStatus__944573617 = {#approved; #pending; #rejected};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type ExternalBlob__671167343 = Blob;
+type Int__270357528 = Int__616954475;
+type Int__616954475 = Int;
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Profession__241713506 =
+  {
+    #ACTechnician;
+    #Barber;
+    #Caretaker;
+    #Carpenter;
+    #Cleaner;
+    #Cook;
+    #DeliveryWorker;
+    #DemolitionWorker;
+    #Driver;
+    #Electrician;
+    #EventHelper;
+    #Gardner;
+    #GlassFitter;
+    #HeavyEquipmentOperator;
+    #Helper;
+    #Loader;
+    #Mason;
+    #Mechanic;
+    #Mover;
+    #Other;
+    #Painter;
+    #Peon;
+    #PestControl;
+    #Plumber;
+    #RoadWorker;
+    #RoofWorker;
+    #Scaffolding;
+    #SecurityGuard;
+    #SteelFixer;
+    #Sweeper;
+    #Tailor;
+    #TileLayer;
+    #Washer;
+    #Watchman;
+    #Welder
+  };
+type SeekerId__542437470 = Principal;
+type SeekerProfile__57464414 =
+  {
+    created_at : Timestamp__301639476;
+    email : Text;
+    id : SeekerId__542437470;
+    is_active : Bool;
+    name : Text;
+    password : Text;
+    phone : Text
+  };
+type Time__796480547 = Int__270357528;
+type Time__900049286 = Time__796480547;
+type Timestamp__301639476 = Time__900049286;
+type UserRole__1073662873 = {#admin; #guest; #user};
+type VerificationStatus__1042146990 =
+  {#Pending; #Rejected; #Removed; #Verified};
+type WorkerAvailability__469374132 = {endTime : Text; startTime : Text};
+type WorkerId__914852314 = Principal;
+type WorkerProfile__989373487 =
+  {
+    admin_notes : ?Text;
+    approved_at : ?Timestamp__301639476;
+    availability : WorkerAvailability__469374132;
+    bio : ?Text;
+    created_at : Timestamp__301639476;
+    email : Text;
+    emergency_contact_name : ?Text;
+    emergency_contact_phone : ?Text;
+    hourly_rate : Nat;
+    id : WorkerId__914852314;
+    is_available : Bool;
+    languages_spoken : ?[Text];
+    location_address : Text;
+    location_lat : Float;
+    location_lng : Float;
+    name : Text;
+    password : Text;
+    payment_preference : ?Text;
+    phone : Text;
+    profession : Profession__241713506;
+    profession_custom : ?Text;
+    profile_photo : ?ExternalBlob__671167343;
+    rejection_reason : ?Text;
+    skills : [Text];
+    verification_status : VerificationStatus__1042146990;
+    years_of_experience : ?Nat
+  };
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1073662873>
+    };
+  stable approvalState :
+    {
+      var approvalStatus :
+        Map__605269027<Principal, ApprovalStatus__944573617>
+    };
+  stable seekers :
+    {
+      var root : Node__46230540<Principal, SeekerProfile__57464414>;
+      var size : Nat__490723111
+    };
+  stable workerState : {var nextWorkerId : Nat};
+  stable workers :
+    {
+      var root : Node__46230540<Principal, WorkerProfile__989373487>;
+      var size : Nat__490723111
+    }
+};

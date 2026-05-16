@@ -1,0 +1,25 @@
+{
+  "overview": "Shramik is a professional platform connecting daily wage workers across 35+ professions with people seeking their services. Features GPS-based worker discovery, multi-language support (Hindi, English, Marathi), a complete admin dashboard, and a full Vercel deployment guide for self-hosting with Node.js and MongoDB.",
+  "features": [
+    "Worker registration with 3-step form, photo upload, and extended profile fields",
+    "Admin dashboard with approval, rejection, ban, and real-time stats",
+    "GPS-based map showing nearby verified workers with profession and distance filters",
+    "Multi-language support: English, Hindi, and Marathi",
+    "Worker login, logout banner, availability toggle, and profile editing",
+    "Full /deploy-guide page with step-by-step GitHub + Vercel deployment instructions"
+  ],
+  "category": "marketplace",
+  "tags": [
+    "workers",
+    "marketplace",
+    "labor",
+    "gig-economy",
+    "india",
+    "multilingual",
+    "admin-dashboard",
+    "gps",
+    "vercel",
+    "deployment-guide"
+  ],
+  "last_updated": "2026-05-16T09:39:48.952Z"
+}
